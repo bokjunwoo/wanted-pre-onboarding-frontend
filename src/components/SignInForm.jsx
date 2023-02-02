@@ -3,6 +3,7 @@ import { css } from "@emotion/react";
 import { useState, useCallback } from 'react'
 import { Form, Input, Button } from 'antd';
 import { useNavigate } from "react-router-dom";
+import axios from 'axios'
 
 export default function SignUpForm() {
   const navigate = useNavigate();
@@ -48,11 +49,18 @@ export default function SignUpForm() {
   // 버튼 활성화
   const isDisabled = (isEmail && isPassword)
 
-  // 회원가입
+  // 로그인
   const onSubmitForm = useCallback(() => {
-    alert('로그인 성공')
-    navigate('/todo')
-  }, [navigate])
+    axios.post('http://localhost:8000/auth/signin', { email, password })
+      .then((res) => {
+        localStorage.setItem('access-token', res.data.access_token)
+        alert('로그인을 성공했습니다.')
+        navigate('/todo')
+      })
+      .catch(() => {
+        alert('아이디와 비밀번호를 확인해주세요')
+      })
+  }, [email, password, navigate])
 
   return (
     <Form onFinish={onSubmitForm} css={css({ position: 'absolute', width: '350px', padding: '30px', left: '50%', top: '50%', transform: 'translate(-50%, -50%)' })}>
