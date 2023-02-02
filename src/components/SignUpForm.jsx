@@ -3,6 +3,7 @@ import { css } from "@emotion/react";
 import { useState, useCallback } from 'react'
 import { Form, Input, Button } from 'antd';
 import { useNavigate } from "react-router-dom";
+import axios from 'axios'
 
 export default function SignUpForm() {
   const navigate = useNavigate();
@@ -50,9 +51,15 @@ export default function SignUpForm() {
 
   // 회원가입
   const onSubmitForm = useCallback(() => {
-    alert('회원가입 성공')
-    navigate('/signin')
-  }, [navigate])
+    axios.post('http://localhost:8000/auth/signup', { email, password })
+    .then(() => {
+      alert('회원가입을 성공했습니다.')
+      navigate('/signin')
+    })
+    .catch(() => {
+      alert('이미 가입된 아이디 입니다.')
+    })
+  }, [email, password, navigate])
 
   return (
     <Form onFinish={onSubmitForm} css={css({ position: 'absolute', width: '350px', padding: '30px', left: '50%', top: '50%', transform: 'translate(-50%, -50%)' })}>
