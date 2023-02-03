@@ -1,58 +1,77 @@
 /** @jsxImportSource @emotion/react */
 import { css } from "@emotion/react";
-import { Button, Input, Space } from 'antd';
+import { Button, Form, Input, Space } from 'antd';
 import { useCallback } from 'react';
 import { useState } from 'react';
+import axios from 'axios';
 
-export default function TodoList() {
-  const [value, setValue] = useState('1')
+export default function TodoList({ token, data, render, setRender }) {
   // 수정 버튼
   const [amendButton, setAmendbutton] = useState(true)
   const amendButtonChange = useCallback(() => {
     setAmendbutton(false)
   }, [])
 
-  // 취소버튼
+  // 글 수정
+  const [todo, setTodo] = useState(data.todo)
+  const onChangeAmend = useCallback((e) => {
+    setTodo(e.target.value)
+  }, [])
+
+  // 글 수정 폼
+  const onSubmitForm = useCallback(() => {
+    axios.put(`http://localhost:8000/todos/${data.id}`, { todo, isCompleted: true }, { headers: { Authorization: `Bearer ${token}` } })
+      .then(() => {
+        alert('수정되었습니다.')
+        setAmendbutton(true)
+        setTodo(todo)
+        setRender(!render)
+      })
+      .catch(() => {
+        alert('로그인이 필요합니다.')
+      })
+  }, [data.id, todo, token, render, setRender])
+
+  // 취소 버튼
   const [cancelButton, setCancelButton] = useState(false)
   const cancelButtonChange = useCallback(() => {
     setAmendbutton(true)
     setCancelButton(true)
   }, [])
 
-  const onChangeAmend = useCallback((e) => {
-    setValue(e.target.value)
-  }, [])
-
-  const onSubmitForm = useCallback(() => {
-
-  }, [])
-
+  // TODO 삭제
   const removeTodo = useCallback(() => {
-
-  }, [])
+    axios.delete(`http://localhost:8000/todos/${data.id}`, { headers: { Authorization: `Bearer ${token}` } })
+      .then(() => {
+        alert('삭제되었습니다.')
+        setRender(!render)
+      })
+      .catch(() => {
+        alert('로그인이 필요합니다.')
+      })
+  }, [data.id, token, render, setRender])
 
   return (
-    <>
-      <h3>내용</h3>
-      <li>
-        <Space>
-          <input type="checkbox" css={css({ marginRight: '10px' })} />
-        </Space>
-        {
-          amendButton ?
+    <li>
+      <Space>
+        <input type="checkbox" css={css({ marginRight: '10px' })} />
+      </Space>
+      {
+        amendButton ?
+          <Space>
+            <span>{todo} {data.isCompleted && '(수정됨)'}</span>
+            <Button onClick={amendButtonChange} data-testid="modify-button" disabled={cancelButton}>수정</Button>
+            <Button onClick={removeTodo} data-testid="delete-button">삭제</Button>
+          </Space>
+          :
+          <Form style={{ display: 'inline-block' }} onFinish={onSubmitForm}>
             <Space>
-              <span>{value}</span>
-              <Button onClick={amendButtonChange} data-testid="modify-button" disabled={cancelButton}>수정</Button>
-              <Button onClick={removeTodo} data-testid="delete-button">삭제</Button>
-            </Space>
-            :
-            <Space>
-              <Input type='text' value={value} onChange={onChangeAmend} data-testid="modify-input" />
-              <Button onSubmit={onSubmitForm} data-testid="submit-button">제출</Button>
+              <Input type='text' value={todo} onChange={onChangeAmend} data-testid="modify-input" required />
+              <Button htmlType='submit' data-testid="submit-button">제출</Button>
               <Button onClick={cancelButtonChange} data-testid="cancel-button">취소</Button>
             </Space>
-        }
-      </li>
-    </>
+          </Form>
+      }
+    </li>
   )
 }
