@@ -9,6 +9,9 @@ import { useEffect } from 'react';
 export default function SignUpForm() {
   const navigate = useNavigate();
 
+  // submit 버튼
+  const [isClick, setIsClick] = useState(false)
+
   // 이메일, 비밀번호
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -60,15 +63,19 @@ export default function SignUpForm() {
 
   // 회원가입
   const onSubmitForm = useCallback(() => {
-    axios.post('http://localhost:8000/auth/signup', { email, password })
-      .then(() => {
-        alert('회원가입을 성공했습니다.')
-        navigate('/signin')
-      })
-      .catch(() => {
-        alert('이미 가입된 아이디 입니다.')
-      })
-  }, [email, password, navigate])
+    if (!isClick) {
+      setIsClick(true)
+      axios.post('http://localhost:8000/auth/signup', { email, password })
+        .then(() => {
+          alert('회원가입을 성공했습니다.')
+          navigate('/signin')
+          setIsClick(false)
+        })
+        .catch(() => {
+          alert('이미 가입된 아이디 입니다.')
+        })
+    }
+  }, [email, password, navigate, isClick])
 
   return (
     <Form onFinish={onSubmitForm} css={css({ position: 'absolute', width: '350px', padding: '30px', left: '50%', top: '50%', transform: 'translate(-50%, -50%)' })}>
@@ -99,8 +106,8 @@ export default function SignUpForm() {
       </div>
 
       <div style={{ marginTop: 10 }}>
-        <Button type='primary' htmlType='submit' data-testid="signup-button" disabled={isDisabled}>
-          가입하기
+        <Button type='primary' htmlType='submit' data-testid="signup-button" disabled={isDisabled || isClick}>
+          {isClick ? '회원가입중' : '회원가입'}
         </Button>
       </div>
     </Form>

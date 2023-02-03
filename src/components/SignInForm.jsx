@@ -9,6 +9,9 @@ import { useEffect } from 'react';
 export default function SignUpForm() {
   const navigate = useNavigate();
 
+  // submit 버튼
+  const [isClick, setIsClick] = useState(false)
+
   // 이메일, 비밀번호
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
@@ -50,7 +53,7 @@ export default function SignUpForm() {
   // 버튼 활성화
   const [isDisabled, setIsDisabled] = useState(true)
   useEffect(() => {
-    if(isEmail && isPassword) {
+    if (isEmail && isPassword) {
       setIsDisabled(false)
       return
     } else {
@@ -60,16 +63,20 @@ export default function SignUpForm() {
 
   // 로그인
   const onSubmitForm = useCallback(() => {
-    axios.post('http://localhost:8000/auth/signin', { email, password })
-      .then((res) => {
-        localStorage.setItem('access-token', res.data.access_token)
-        alert('로그인을 성공했습니다.')
-        navigate('/todo')
-      })
-      .catch(() => {
-        alert('아이디와 비밀번호를 확인해주세요')
-      })
-  }, [email, password, navigate])
+    if (!isClick) {
+      setIsClick(true)
+      axios.post('http://localhost:8000/auth/signin', { email, password })
+        .then((res) => {
+          localStorage.setItem('access-token', res.data.access_token)
+          alert('로그인을 성공했습니다.')
+          navigate('/todo')
+          setIsClick(false)
+        })
+        .catch(() => {
+          alert('아이디와 비밀번호를 확인해주세요')
+        })
+    }
+  }, [email, password, navigate, isClick])
 
   return (
     <Form onFinish={onSubmitForm} css={css({ position: 'absolute', width: '350px', padding: '30px', left: '50%', top: '50%', transform: 'translate(-50%, -50%)' })}>
@@ -100,8 +107,8 @@ export default function SignUpForm() {
       </div>
 
       <div style={{ marginTop: 10 }}>
-        <Button type='primary' htmlType='submit' data-testid="signin-button" disabled={isDisabled}>
-          로그인
+        <Button type='primary' htmlType='submit' data-testid="signin-button" disabled={isDisabled || isClick}>
+          {isClick ? '로그인중' : '로그인'}
         </Button>
       </div>
     </Form>

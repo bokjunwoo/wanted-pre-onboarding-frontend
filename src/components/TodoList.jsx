@@ -6,6 +6,9 @@ import { useState } from 'react';
 import axios from 'axios';
 
 export default function TodoList({ token, data, render, setRender }) {
+  // submit 버튼
+  const [isClick, setIsClick] = useState(false)
+
   // 수정 버튼
   const [amendButton, setAmendbutton] = useState(true)
   const amendButtonChange = useCallback(() => {
@@ -20,17 +23,25 @@ export default function TodoList({ token, data, render, setRender }) {
 
   // 글 수정 폼
   const onSubmitForm = useCallback(() => {
-    axios.put(`http://localhost:8000/todos/${data.id}`, { todo, isCompleted: true }, { headers: { Authorization: `Bearer ${token}` } })
-      .then(() => {
-        alert('수정되었습니다.')
-        setAmendbutton(true)
-        setTodo(todo)
-        setRender(!render)
-      })
-      .catch(() => {
-        alert('로그인이 필요합니다.')
-      })
-  }, [data.id, todo, token, render, setRender])
+    if (token) {
+      if (!isClick) {
+        setIsClick(true)
+        axios.put(`http://localhost:8000/todos/${data.id}`, { todo, isCompleted: true }, { headers: { Authorization: `Bearer ${token}` } })
+          .then(() => {
+            alert('수정되었습니다.')
+            setAmendbutton(true)
+            setTodo(todo)
+            setRender(!render)
+            setIsClick(false)
+          })
+          .catch(() => {
+            alert('수정중에 오류가 발생했습니다. 다시 시도해 주세요.')
+          })
+      }
+    } else {
+      alert('로그인이 필요합니다.')
+    }
+  }, [data.id, todo, token, render, setRender, isClick])
 
   // 취소 버튼
   const [cancelButton, setCancelButton] = useState(false)
@@ -41,15 +52,23 @@ export default function TodoList({ token, data, render, setRender }) {
 
   // TODO 삭제
   const removeTodo = useCallback(() => {
-    axios.delete(`http://localhost:8000/todos/${data.id}`, { headers: { Authorization: `Bearer ${token}` } })
-      .then(() => {
-        alert('삭제되었습니다.')
-        setRender(!render)
-      })
-      .catch(() => {
-        alert('로그인이 필요합니다.')
-      })
-  }, [data.id, token, render, setRender])
+    if (token) {
+      if (!isClick) {
+        setIsClick(true)
+        axios.delete(`http://localhost:8000/todos/${data.id}`, { headers: { Authorization: `Bearer ${token}` } })
+          .then(() => {
+            alert('삭제되었습니다.')
+            setRender(!render)
+            setIsClick(false)
+          })
+          .catch(() => {
+            alert('삭제중에 오류가 발생했습니다. 다시 시도해 주세요.')
+          })
+      }
+    } else {
+      alert('로그인이 필요합니다.')
+    }
+  }, [data.id, token, render, setRender, isClick])
 
   return (
     <li>
@@ -61,13 +80,13 @@ export default function TodoList({ token, data, render, setRender }) {
           <Space>
             <span>{todo} {data.isCompleted && '(수정됨)'}</span>
             <Button onClick={amendButtonChange} data-testid="modify-button" disabled={cancelButton}>수정</Button>
-            <Button onClick={removeTodo} data-testid="delete-button">삭제</Button>
+            <Button onClick={removeTodo} data-testid="delete-button" disabled={isClick}>{isClick ? '삭제중' : '삭제'}</Button>
           </Space>
           :
           <Form style={{ display: 'inline-block' }} onFinish={onSubmitForm}>
             <Space>
               <Input type='text' value={todo} onChange={onChangeAmend} data-testid="modify-input" required />
-              <Button htmlType='submit' data-testid="submit-button">제출</Button>
+              <Button htmlType='submit' data-testid="submit-button" disabled={isClick}>{isClick ? '제출중' : '제출'}</Button>
               <Button onClick={cancelButtonChange} data-testid="cancel-button">취소</Button>
             </Space>
           </Form>
