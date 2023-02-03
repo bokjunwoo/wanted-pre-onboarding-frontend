@@ -4,6 +4,7 @@ import { useState, useCallback } from 'react'
 import { Form, Input, Button } from 'antd';
 import { useNavigate } from "react-router-dom";
 import axios from 'axios'
+import { useEffect } from 'react';
 
 export default function SignUpForm() {
   const navigate = useNavigate();
@@ -47,7 +48,15 @@ export default function SignUpForm() {
   }, [])
 
   // 버튼 활성화
-  const isDisabled = (isEmail && isPassword)
+  const [isDisabled, setIsDisabled] = useState(true)
+  useEffect(() => {
+    if(isEmail && isPassword) {
+      setIsDisabled(false)
+      return
+    } else {
+      setIsDisabled(true)
+    }
+  }, [isEmail, isPassword])
 
   // 로그인
   const onSubmitForm = useCallback(() => {
@@ -91,7 +100,7 @@ export default function SignUpForm() {
       </div>
 
       <div style={{ marginTop: 10 }}>
-        <Button type='primary' htmlType='submit' data-testid="signin-button" disabled={!isDisabled}>
+        <Button type='primary' htmlType='submit' data-testid="signin-button" disabled={isDisabled}>
           로그인
         </Button>
       </div>
