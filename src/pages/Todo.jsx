@@ -20,14 +20,17 @@ export default function Todo() {
   const [render, setRender] = useState(false)
 
   useEffect(() => {
-    if (token !== null) {
+    if (token) {
       axios.get('http://localhost:8000/todos', { headers: { Authorization: `Bearer ${token}` } })
         .then((res) => {
-          setData(res.data)
-          console.log(res.data)
+          if (res.data.length !== 0) {
+            setData(res.data)
+          } else {
+            setData([undefined])
+          }
         })
         .catch(() => {
-          console.log('실패')
+          alert('데이터를 불러오는 중에 오류가 발생했습니다. 다시 시도해 주세요.')
         })
     } else {
       alert('로그인후 이용가능 합니다.')
@@ -35,12 +38,21 @@ export default function Todo() {
     }
   }, [token, navigator, render])
 
+  if (data.length === 0) {
+    return (
+      <div css={css({ position: 'absolute', width: '400px', padding: '30px', left: '50%', top: '5%', transform: 'translate(-50%, 0)' })}>
+        <TodoForm token={token} render={render} setRender={setRender} />
+        <h3>데이터 로딩중 입니다...</h3>
+      </div>
+    )
+  }
+
   return (
     <div css={css({ position: 'absolute', width: '400px', padding: '30px', left: '50%', top: '5%', transform: 'translate(-50%, 0)' })}>
       <TodoForm token={token} render={render} setRender={setRender} />
       <h3>내용</h3>
       {
-        data.map((data) => <TodoList key={data.id} data={data} token={token} render={render} setRender={setRender} />)
+        data[0] !== undefined ? data.map((data) => <TodoList key={data.id} data={data} token={token} render={render} setRender={setRender} />) : <span>저장된 TODO가 없습니다.</span>
       }
     </div>
   )
