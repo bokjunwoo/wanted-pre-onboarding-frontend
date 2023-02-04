@@ -8,7 +8,7 @@ import TodoForm from '../components/TodoForm';
 import TodoList from '../components/TodoList';
 
 export default function Todo() {
-  const navigator = useNavigate();
+  const navigate = useNavigate();
 
   // 로그인 토큰
   const token = localStorage.getItem('access-token')
@@ -33,10 +33,10 @@ export default function Todo() {
           alert('데이터를 불러오는 중에 오류가 발생했습니다. 다시 시도해 주세요.')
         })
     } else {
-      alert('로그인후 이용가능 합니다.')
-      navigator('/signin')
+      alert('로그인이 필요합니다.')
+      navigate('/signin')
     }
-  }, [token, navigator, render])
+  }, [token, render, navigate])
 
   if (data.length === 0) {
     return (
