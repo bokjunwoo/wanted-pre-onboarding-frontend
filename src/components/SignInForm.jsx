@@ -2,12 +2,15 @@
 import { css } from "@emotion/react";
 import { useState, useCallback } from 'react'
 import { Form, Input, Button } from 'antd';
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import axios from 'axios'
 import { useEffect } from 'react';
 
 export default function SignUpForm() {
   const navigate = useNavigate();
+
+  // 로그인 토큰
+  const token = localStorage.getItem('access-token')
 
   // submit 버튼
   const [isClick, setIsClick] = useState(false)
@@ -23,6 +26,11 @@ export default function SignUpForm() {
   // 유효성 검사
   const [isEmail, setIsEmail] = useState(false)
   const [isPassword, setIsPassword] = useState(false)
+
+  // 로그인 여부에 따른 리다이렉트 처리
+  useEffect(() => {
+    if (token) navigate('/todo')
+  })
 
   // 이메일
   const onChangeEmail = useCallback((e) => {
@@ -110,6 +118,13 @@ export default function SignUpForm() {
         <Button type='primary' htmlType='submit' data-testid="signin-button" disabled={isDisabled || isClick}>
           {isClick ? '로그인중' : '로그인'}
         </Button>
+      </div>
+
+      <div css={css({ textAlign: 'right' })}>
+        <Link to='/signup'>회원가입하러가기</Link>
+      </div>
+      <div css={css({ textAlign: 'right' })}>
+        <Link to='/'>메인으로가기</Link>
       </div>
     </Form>
   )
