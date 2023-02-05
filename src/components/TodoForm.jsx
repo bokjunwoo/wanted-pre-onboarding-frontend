@@ -19,7 +19,7 @@ export default function TodoForm({ token, render, setRender }) {
     if (token) {
       if (!isClick) {
         setIsClick(true)
-        axios.post('http://localhost:8000/todos', { todo }, { headers: { Authorization: `Bearer ${token}` } })
+        axios.post('https://pre-onboarding-selection-task.shop/todos', { todo }, { headers: { Authorization: `Bearer ${token}` } })
           .then(() => {
             alert('새로운 TODO가 입력되었습니다.')
             setTodo('')

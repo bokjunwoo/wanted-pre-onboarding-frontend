@@ -32,7 +32,7 @@ export default function TodoList({ token, data, render, setRender }) {
     if (token) {
       axios
         .put(
-          `http://localhost:8000/todos/${data.id}`,
+          `https://pre-onboarding-selection-task.shop/todos/${data.id}`,
           {
             todo,
             isCompleted: !checkBox,
@@ -57,7 +57,7 @@ export default function TodoList({ token, data, render, setRender }) {
         setIsClick(true);
         axios
           .put(
-            `http://localhost:8000/todos/${data.id}`,
+            `https://pre-onboarding-selection-task.shop/${data.id}`,
             { todo, isCompleted: !checkBox },
             { headers: { Authorization: `Bearer ${token}` } }
           )
@@ -90,7 +90,7 @@ export default function TodoList({ token, data, render, setRender }) {
       if (!isClick) {
         setIsClick(true);
         axios
-          .delete(`http://localhost:8000/todos/${data.id}`, {
+          .delete(`https://pre-onboarding-selection-task.shop/${data.id}`, {
             headers: { Authorization: `Bearer ${token}` },
           })
           .then(() => {

@@ -73,7 +73,7 @@ export default function SignUpForm() {
   const onSubmitForm = useCallback(() => {
     if (!isClick) {
       setIsClick(true)
-      axios.post('http://localhost:8000/auth/signup', { email, password })
+      axios.post('https://pre-onboarding-selection-task.shop/auth/signup', { email, password })
         .then(() => {
           alert('회원가입을 성공했습니다.')
           navigate('/signin')

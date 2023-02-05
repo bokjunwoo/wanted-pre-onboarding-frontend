@@ -21,7 +21,7 @@ export default function Todo() {
 
   useEffect(() => {
     if (token) {
-      axios.get('http://localhost:8000/todos', { headers: { Authorization: `Bearer ${token}` } })
+      axios.get('https://pre-onboarding-selection-task.shop/todos', { headers: { Authorization: `Bearer ${token}` } })
         .then((res) => {
           if (res.data.length !== 0) {
             setData(res.data)
