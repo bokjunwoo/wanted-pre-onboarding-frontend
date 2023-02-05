@@ -11,7 +11,7 @@ export default function TodoList({ token, data, render, setRender }) {
 
   // 체크 박스
   const [checkBox, setCheckBox] = useState(data.isCompleted);
-  const checkBoxChange = useCallback((e) => {
+  const checkBoxChange = useCallback(() => {
     setCheckBox(!checkBox)
   }, [checkBox])
 
@@ -57,8 +57,8 @@ export default function TodoList({ token, data, render, setRender }) {
         setIsClick(true);
         axios
           .put(
-            `https://pre-onboarding-selection-task.shop/${data.id}`,
-            { todo, isCompleted: !checkBox },
+            `https://pre-onboarding-selection-task.shop/todos/${data.id}`,
+            { todo, isCompleted: checkBox },
             { headers: { Authorization: `Bearer ${token}` } }
           )
           .then(() => {
@@ -70,6 +70,7 @@ export default function TodoList({ token, data, render, setRender }) {
           })
           .catch(() => {
             alert("수정중에 오류가 발생했습니다. 다시 시도해 주세요.");
+            setIsClick(false)
           });
       }
     } else {
@@ -100,6 +101,7 @@ export default function TodoList({ token, data, render, setRender }) {
           })
           .catch(() => {
             alert("삭제중에 오류가 발생했습니다. 다시 시도해 주세요.");
+            setIsClick(false)
           });
       }
     } else {

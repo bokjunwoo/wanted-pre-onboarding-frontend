@@ -27,6 +27,7 @@ export default function TodoForm({ token, render, setRender }) {
             setIsClick(false)
           }).catch(() => {
             alert('저장중에 오류가 발생했습니다. 다시 시도해 주세요.')
+            setIsClick(false)
           })
       }
     } else {

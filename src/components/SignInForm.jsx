@@ -82,6 +82,7 @@ export default function SignUpForm() {
         })
         .catch(() => {
           alert('아이디와 비밀번호를 확인해주세요')
+          setIsClick(false)
         })
     }
   }, [email, password, navigate, isClick])

@@ -81,6 +81,7 @@ export default function SignUpForm() {
         })
         .catch(() => {
           alert('이미 가입된 아이디 입니다.')
+          setIsClick(false)
         })
     }
   }, [email, password, navigate, isClick])
