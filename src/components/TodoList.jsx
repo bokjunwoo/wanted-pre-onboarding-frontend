@@ -91,7 +91,7 @@ export default function TodoList({ token, data, render, setRender }) {
       if (!isClick) {
         setIsClick(true);
         axios
-          .delete(`https://pre-onboarding-selection-task.shop/${data.id}`, {
+          .delete(`https://pre-onboarding-selection-task.shop/todos/${data.id}`, {
             headers: { Authorization: `Bearer ${token}` },
           })
           .then(() => {
